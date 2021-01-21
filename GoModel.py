@@ -21,7 +21,7 @@ def standardizeImage(file_path):
     return resizeWithAspectRatio(cv2.imread(file_path), width = 500)
 
 class GoModel:
-    def __init__(self, size):
+    def __init__(self, size, background = None):
         black_cascade_file = "./resources/blackCascade.xml"
         white_cascade_file = "./resources/whiteCascade.xml"
         empty_cascade_file = "./resources/emptyCascade.xml"
@@ -29,8 +29,10 @@ class GoModel:
         self.black_cascade = cv2.CascadeClassifier(white_cascade_file)
         self.white_cascade = cv2.CascadeClassifier(black_cascade_file)
         self.size = size
+        self.last_board_image = background
+        self.last_board_array = np.zeros((self.size, self.size), dtype = int)
 
-    def createBoard(self, centers, corners, output):
+    def createBoard(self, centers, corners, output): # (This Method should be abstracted to work when using Image differencing. ie: finds the new one and places it, ignores old/removed.)
         if corners is not None and len(corners) > 3: # (Do Later, should be used for hand detection or smth)
             flat_corners = np.array([[0, 0],
                                     [self.size - 1, 0],
@@ -137,8 +139,9 @@ class GoModel:
         distanceList.sort()
         numDistances = int((self.size - 1)**2 * 1.8) # (Doesn't Seem Right -TT) number of distances that should be between spots on a board
         maxDistance = np.mean(distanceList[0:numDistances]) * 1.75 # (Huh) a little bigger than that, for luck
-        minGroup = int(self.size**2 * 0.75) # (Change this number later)
+        minGroup = int(self.size**2 * 0.75) # (Change this number later if necessary)
         group = np.zeros((length), dtype="bool_")
+
         for i in range(length):
             self.findGroupMembers(maxDistance, i, distances, group)
             if group.sum() >= minGroup:
@@ -176,16 +179,19 @@ class GoModel:
         epsilon = 0.001*cv2.arcLength(hull, True)
         approx = cv2.approxPolyDP(hull, epsilon, True)
         
-        return self.fourCorners(approx, dimensions)
+        return self.fourCorners(approx, dimensions)        
 
-    def readBoard(self, image):
-        output = np.zeros((self.size, self.size), dtype = int)
+    def findCriticalPoints(self, image):
         centers = self.findCenters(image)
         (h, w, d) = image.shape
         dimensions = (w, h)
         corners = self.findCorners(centers, dimensions)
+        return centers, corners
+
+    def readBoard(self, image):
+        output = np.zeros((self.size, self.size), dtype = int)
+        centers, corners = self.findCriticalPoints(image)
         self.createBoard(centers, corners, output)
-        # output = np.rot90(output, k = 3, axes = (0,1))
         return output
 
     def showBoard(self, image):
@@ -203,23 +209,41 @@ class GoModel:
         cv2.imshow('Board', image)
         cv2.waitKey()
 
+    def readBoard(self, image, is_black_turn):
+        output = np.zeros((self.size, self.size), dtype = int)
+        centers, corners = self.findCriticalPoints(image)
+        cascade_output = self.createBoard(centers, corners, output)
 
-print("RoyDumb")
-image = standardizeImage("./resources/test3.png")
+        if (self.last_board_image != None):
+            last_gray = cv2.GaussianBlur(cv2.cvtColor(self.last_board_image, cv2.COLOR_BGR2GRAY), (5, 5), 0)
+            current_gray =  cv2.GaussianBlur(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), (5, 5), 0)
+            difference = cv2.threshold(cv2.absdiff(last_gray, current_gray), 25, 255, cv2.THRESH_BINARY)
+            detector = cv2.SimpleBlobDetector()
+            keypoints = detector.detect(difference) # https://www.javatpoint.com/opencv-blob-detection
+            
+            # test_image = cv2.drawKeypoints((image, keypoints, np.array([])), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)  # Test This Line
+)
+
+            # Call subtraction of image - self.last_board_image -> then do blob detection and find centers.
+                    # Need some way to deal with floating hands or smth??? maybe using the black and white classifiers here might work? 
+                    # If hand then quit and return something
+                    # Idea 1: use blob detection and if not all blobs are similar size. think 1.1x? then quit 
+            # Figure out the color of that placed tile? (Maybe try using the cascade clasifiers on the board) ie go through and place all the tiles 
+            # ie use the cascade classifiers to see on the board onto a seperate array and compare that to what the dumb thing sees 
+            # use the mapping of the last board to place the newest piece onto the self.last_board_array/remove killed pieces (with corners) and with correct color
+            # previous step needs last_board_array to correctly determine what to do with points
+            # if all else fails use the boolean "is_black_turn" to color the tiles. 
+            # Should be around a 100% accuracy with smart players and a highish accuracy with dumb players and good lighting conditions. 
+            self.last_board_array = ...
+            
+        else:
+            self.last_board_array = cascade_output
+        
+        self.last_board_image = image
+        return self.last_board_array
+
+image = standardizeImage("./resources/a.png")
 roy_model = GoModel(19)
 # print(roy_model.readBoard(image))
 roy_model.showBoard(image)
-
-
 # Figure out rotation code
-# Idea 1: Continue testing watchGo Code and see what happens....
-
-# Idea 2
-# Start by taking background image, use empty cascade classifier to determine corners. 
-# use image differencing to determine if something has been placed.
-# can use the other cascade classifiers as error checkers to see if a hand is in the picture or smth?? like <= 2??
-# Maybe use SSIM to determine similarity between last and current board. 
-# Need to assume perfection maybe?? so if we know image is as so thennn
-# background subtraction
-
-# 95% ->  mistakes into the program?? -> for later

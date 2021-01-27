@@ -1,24 +1,34 @@
-from picamera import PiCamera
-from time import sleep
-import numpy as np
-import functools
-import cv2
-import watchGo
+import picamera
+import time
 
-# class GoCamera:
-#     def __init__(self, bs):
-#         self.camera = PiCamera()
-#         self.board_size = bs
-#         camera.start_preview(alpha = 192)
-#         self.frame_size = None
+def resizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
 
-camera = PiCamera()
-camera.start_preview()
-sleep(1)
-pre_name = "./resources/preTest.jpg"
-post_name = "./resources/postTest.jpg"
-camera.capture(pre_name)
-a = input("Press a key")
-camera.capture(post_name)
-camera.stop_preview()
-camera.close()
+    if width is None and height is None:
+        return image
+    if width is None:
+        r = height / float(h)
+        dim = (int(w * r), height)
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    return cv2.resize(image, dim, interpolation=inter)
+
+def standardizeImage(file_path):
+    return resizeWithAspectRatio(cv2.imread(file_path), width = 500)
+
+class GoCamera():
+    def __init__(self):
+        self.camera = picamera.PiCamera()
+        time.sleep(2)
+
+    def close(self):
+        self.camera.close()
+
+    def capture(self):
+        temp_picture = './resources/temp_picture.jpg'
+        self.camera.capture(temp_picture)
+        return standardizeImage(temp_picture)        
+        

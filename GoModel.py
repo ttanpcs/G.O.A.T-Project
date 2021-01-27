@@ -3,24 +3,6 @@ import random
 import cv2
 import GoBoard as gb 
 
-def resizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
-    dim = None
-    (h, w) = image.shape[:2]
-
-    if width is None and height is None:
-        return image
-    if width is None:
-        r = height / float(h)
-        dim = (int(w * r), height)
-    else:
-        r = width / float(w)
-        dim = (width, int(h * r))
-
-    return cv2.resize(image, dim, interpolation=inter)
-
-def standardizeImage(file_path):
-    return resizeWithAspectRatio(cv2.imread(file_path), width = 500)
-
 class GoModel:
     def __init__(self, size, background = None):
         black_cascade_file = "./resources/blackCascade.xml"
@@ -163,9 +145,9 @@ class GoModel:
                 if distance > 0:
                     distanceList.append(distance)
         distanceList.sort()
-        numDistances = int((self.size - 1)**2 * 1.8) # (Doesn't Seem Right -TT) number of distances that should be between spots on a board
-        maxDistance = np.mean(distanceList[0:numDistances]) * 1.75 # (Huh) a little bigger than that, for luck
-        minGroup = int(self.size**2 * 0.75) # (Change this number later if necessary)
+        numDistances = int((self.size - 1)**2 * 1.8)
+        maxDistance = np.mean(distanceList[0:numDistances]) * 1.5 # (Change this number) a little bigger than that, for luck
+        minGroup = int(self.size**2 * 0.75)
         group = np.zeros((length), dtype="bool_")
 
         for i in range(length):
@@ -215,7 +197,7 @@ class GoModel:
         return centers, corners
 
     def showBoard(self, image):
-        centers = self.findCenters(image)
+        centers, corners = self.findCriticalPoints(image)
         if (self.background_image is not None):
             keypoints = self.findKeypoints(image)
             cv2.drawKeypoints(image, keypoints, image, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS) 
@@ -229,6 +211,13 @@ class GoModel:
                             3,
                             (r, g, b),
                             -1)
+        if corners is not None:
+            for c in corners:
+                cv2.circle(image,
+                           (int(round(c[0])), int(round(c[1]))),
+                           6,
+                           (0, 0, 255),
+                           -1)
         cv2.imshow('Board', image)
         cv2.waitKey()
 
@@ -262,12 +251,3 @@ class GoModel:
             self.last_board = gb.GoBoard(board = cascade_output)
         
         return self.last_board.getBoard()
-
-background_image = standardizeImage("./roy.jpg")
-image = standardizeImage("./roy3.jpg")
-roy_model = GoModel(19, background_image)
-print(roy_model.readBoard(image))
-roy_model.showBoard(image)
-# # Figure out rotation code
-# # Figure out the issue with same colored backgrounds and corners.
-# # Otherwise could write a callibrate method in the "Main"

@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import cv2
+import GoBoard as gb 
 
 def resizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
     dim = None
@@ -29,11 +30,36 @@ class GoModel:
         self.black_cascade = cv2.CascadeClassifier(white_cascade_file)
         self.white_cascade = cv2.CascadeClassifier(black_cascade_file)
         self.size = size
-        self.last_board_image = background
-        self.last_board_array = np.zeros((self.size, self.size), dtype = int)
+        self.background_image = background
+        self.last_board = gb.GoBoard(size = self.size)
 
-    def createBoard(self, centers, corners, output): # (This Method should be abstracted to work when using Image differencing. ie: finds the new one and places it, ignores old/removed.)
-        if corners is not None and len(corners) > 3: # (Do Later, should be used for hand detection or smth)
+    def mergeBoard(self, keypoints, corners, is_black_turn, cascade_output, output):
+        if corners is not None and len(corners) > 3: 
+            flat_corners = np.array([[0, 0],
+                                    [self.size - 1, 0],
+                                    [self.size - 1, self.size - 1],
+                                    [0, self.size - 1]],
+                                dtype="float32")
+            persp = cv2.getPerspectiveTransform(corners, flat_corners)
+            if (len(keypoints) > 0):
+                stones = np.array(cv2.KeyPoint_convert(keypoints), dtype = "float32")
+                stones = np.array([stones])
+                stones_flat = cv2.perspectiveTransform(stones, persp)
+                for i in stones_flat[0]:
+                    x = int(round(i[0]))
+                    y = int(round(i[1]))
+                    if x >= 0 and x < self.size and y >= 0 and y < self.size:
+                        if (self.last_board.getPiece(x, y) != 0):
+                            output[x][y] = self.last_board.getPiece(x, y)
+                        elif (cascade_output[x][y] != 0):
+                            output[x][y] = cascade_output[x][y]
+                        elif (is_black_turn):
+                            output[x][y] = 1
+                        else:
+                            output[x][y] = 2
+        
+    def createBoard(self, centers, corners, output): 
+        if corners is not None and len(corners) > 3: 
             flat_corners = np.array([[0, 0],
                                     [self.size - 1, 0],
                                     [self.size - 1, self.size - 1],
@@ -188,14 +214,11 @@ class GoModel:
         corners = self.findCorners(centers, dimensions)
         return centers, corners
 
-    def readBoard(self, image):
-        output = np.zeros((self.size, self.size), dtype = int)
-        centers, corners = self.findCriticalPoints(image)
-        self.createBoard(centers, corners, output)
-        return output
-
     def showBoard(self, image):
         centers = self.findCenters(image)
+        if (self.background_image is not None):
+            keypoints = self.findKeypoints(image)
+            cv2.drawKeypoints(image, keypoints, image, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS) 
         for key in centers:
             r = random.randint(0, 255)
             g = random.randint(0, 255)
@@ -209,41 +232,42 @@ class GoModel:
         cv2.imshow('Board', image)
         cv2.waitKey()
 
-    def readBoard(self, image, is_black_turn):
-        output = np.zeros((self.size, self.size), dtype = int)
+    def findKeypoints(self, image):
+        last_gray = cv2.GaussianBlur(cv2.cvtColor(self.background_image, cv2.COLOR_BGR2GRAY), (5, 5), 0)
+        current_gray =  cv2.GaussianBlur(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), (5, 5), 0)
+        a, difference = cv2.threshold(cv2.absdiff(last_gray, current_gray), 25, 255, cv2.THRESH_BINARY)
+        difference = cv2.bitwise_not(difference)
+        params = cv2.SimpleBlobDetector_Params()
+        params.filterByArea = False
+        params.filterByInertia = False
+        params.filterByConvexity = False
+        detector = cv2.SimpleBlobDetector_create(params)
+
+        return detector.detect(difference) 
+
+    def readBoard(self, image, is_black_turn = False):
+        cascade_output = np.zeros((self.size, self.size), dtype = int)
         centers, corners = self.findCriticalPoints(image)
-        cascade_output = self.createBoard(centers, corners, output)
+        self.createBoard(centers, corners, cascade_output)
 
-        if (self.last_board_image != None):
-            last_gray = cv2.GaussianBlur(cv2.cvtColor(self.last_board_image, cv2.COLOR_BGR2GRAY), (5, 5), 0)
-            current_gray =  cv2.GaussianBlur(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), (5, 5), 0)
-            difference = cv2.threshold(cv2.absdiff(last_gray, current_gray), 25, 255, cv2.THRESH_BINARY)
-            detector = cv2.SimpleBlobDetector()
-            keypoints = detector.detect(difference) # https://www.javatpoint.com/opencv-blob-detection
-            
-            # test_image = cv2.drawKeypoints((image, keypoints, np.array([])), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)  # Test This Line
-)
-
-            # Call subtraction of image - self.last_board_image -> then do blob detection and find centers.
-                    # Need some way to deal with floating hands or smth??? maybe using the black and white classifiers here might work? 
-                    # If hand then quit and return something
-                    # Idea 1: use blob detection and if not all blobs are similar size. think 1.1x? then quit 
-            # Figure out the color of that placed tile? (Maybe try using the cascade clasifiers on the board) ie go through and place all the tiles 
-            # ie use the cascade classifiers to see on the board onto a seperate array and compare that to what the dumb thing sees 
-            # use the mapping of the last board to place the newest piece onto the self.last_board_array/remove killed pieces (with corners) and with correct color
-            # previous step needs last_board_array to correctly determine what to do with points
-            # if all else fails use the boolean "is_black_turn" to color the tiles. 
-            # Should be around a 100% accuracy with smart players and a highish accuracy with dumb players and good lighting conditions. 
-            self.last_board_array = ...
+        if (self.background_image is not None):
+            output = np.zeros((self.size, self.size), dtype = int)
+            keypoints = self.findKeypoints(image)
+            if ((self.last_board).getNumPieces() + 1 < len(keypoints)): # This doesn't necessarily account for keypoints outside of the board
+                return None # Should probs be some sort of corrupted board constant but wtvr
+            self.mergeBoard(keypoints, corners, is_black_turn, cascade_output, output) 
+            self.last_board = gb.GoBoard(board = output, num_pieces = len(keypoints))
             
         else:
-            self.last_board_array = cascade_output
+            self.last_board = gb.GoBoard(board = cascade_output)
         
-        self.last_board_image = image
-        return self.last_board_array
+        return self.last_board.getBoard()
 
-image = standardizeImage("./resources/a.png")
-roy_model = GoModel(19)
-# print(roy_model.readBoard(image))
+background_image = standardizeImage("./roy.jpg")
+image = standardizeImage("./roy3.jpg")
+roy_model = GoModel(19, background_image)
+print(roy_model.readBoard(image))
 roy_model.showBoard(image)
-# Figure out rotation code
+# # Figure out rotation code
+# # Figure out the issue with same colored backgrounds and corners.
+# # Otherwise could write a callibrate method in the "Main"

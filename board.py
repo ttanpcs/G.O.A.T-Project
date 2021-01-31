@@ -7,5 +7,5 @@ class Board (object):
     def Find_Tile (self, x, y):
         return self.board_tiles_[x][y]
 
-    def Set_Tile (self, x, y, type):
-        self.board_tiles_[x][y] = type
+    def Set_Tile (self, x, y, tile_type):
+        self.board_tiles_[x][y] = tile_type

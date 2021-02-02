@@ -13,9 +13,14 @@ class GoModel:
         self.white_cascade = cv2.CascadeClassifier(black_cascade_file)
         self.size = size
         self.background_image = background
+        if self.background_image is not None:
+            a, self.background_corners = self.findCriticalPoints(self.background_image)
+        else:
+            self.background_corners = None
         self.last_board = gb.GoBoard(size = self.size)
 
     def mergeBoard(self, keypoints, corners, is_black_turn, cascade_output, output):
+        num_valid_keypoints = 0
         if corners is not None and len(corners) > 3: 
             flat_corners = np.array([[0, 0],
                                     [self.size - 1, 0],
@@ -31,15 +36,17 @@ class GoModel:
                     x = int(round(i[0]))
                     y = int(round(i[1]))
                     if x >= 0 and x < self.size and y >= 0 and y < self.size:
-                        if (self.last_board.getPiece(x, y) != 0):
+                        num_valid_keypoints += 1
+                        if (self.last_board.getPiece(x, y) != 0 and self.last_board.getPiece(x, y) != 3 ):
                             output[x][y] = self.last_board.getPiece(x, y)
-                        elif (cascade_output[x][y] != 0):
+                        elif (cascade_output[x][y] != 0 and cascade_output[x][y] != 3):
                             output[x][y] = cascade_output[x][y]
                         elif (is_black_turn):
                             output[x][y] = 1
                         else:
                             output[x][y] = 2
-        
+        return num_valid_keypoints
+
     def createBoard(self, centers, corners, output): 
         if corners is not None and len(corners) > 3: 
             flat_corners = np.array([[0, 0],
@@ -59,7 +66,10 @@ class GoModel:
                         x = int(round(i[0]))
                         y = int(round(i[1]))
                         if x >= 0 and x < self.size and y >= 0 and y < self.size:
-                            output[x][y] = numerical_values[stone]
+                            if (output[x][y] == 0):
+                                output[x][y] = numerical_values[stone]
+                            else:
+                                output[x][y] = 3
 
     def sortPoints(self, box):
         rect = np.zeros((4, 2), dtype = "float32")
@@ -197,7 +207,7 @@ class GoModel:
         return centers, corners
 
     def showBoard(self, image):
-        centers, corners = self.findCriticalPoints(image)
+        centers = self.findCenters(image)
         if (self.background_image is not None):
             keypoints = self.findKeypoints(image)
             cv2.drawKeypoints(image, keypoints, image, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS) 
@@ -211,8 +221,8 @@ class GoModel:
                             3,
                             (r, g, b),
                             -1)
-        if corners is not None:
-            for c in corners:
+        if self.background_corners is not None:
+            for c in self.background_corners:
                 cv2.circle(image,
                            (int(round(c[0])), int(round(c[1]))),
                            6,
@@ -236,18 +246,23 @@ class GoModel:
 
     def readBoard(self, image, is_black_turn = False):
         cascade_output = np.zeros((self.size, self.size), dtype = int)
-        centers, corners = self.findCriticalPoints(image)
-        self.createBoard(centers, corners, cascade_output)
+        centers = self.findCenters(image)
+        self.createBoard(centers, self.background_corners, cascade_output)
 
         if (self.background_image is not None):
             output = np.zeros((self.size, self.size), dtype = int)
-            keypoints = self.findKeypoints(image)
-            if ((self.last_board).getNumPieces() + 1 < len(keypoints)): # This doesn't necessarily account for keypoints outside of the board
-                return None # Should probs be some sort of corrupted board constant but wtvr
-            self.mergeBoard(keypoints, corners, is_black_turn, cascade_output, output) 
-            self.last_board = gb.GoBoard(board = output, num_pieces = len(keypoints))
-            
+            keypoints = self.findKeypoints(image)            
+            num_valid_keypoints = self.mergeBoard(keypoints, self.background_corners, is_black_turn, cascade_output, output) 
+            if ((self.last_board).getNumPieces() + 1 < num_valid_keypoints):
+                print("Number Issue")
+                print((self.last_board).getNumPieces() + 1)
+                print(num_valid_keypoints)
+                return None
+
+            self.last_board = gb.GoBoard(board = output, num_pieces = num_valid_keypoints)
         else:
             self.last_board = gb.GoBoard(board = cascade_output)
         
         return self.last_board.getBoard()
+
+# Have a min size for goPieces -> This needs some testing.

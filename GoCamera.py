@@ -1,5 +1,6 @@
-import picamera
 import time
+import cv2
+import subprocess
 
 def resizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
     dim = None
@@ -20,15 +21,8 @@ def standardizeImage(file_path):
     return resizeWithAspectRatio(cv2.imread(file_path), width = 500)
 
 class GoCamera():
-    def __init__(self):
-        self.camera = picamera.PiCamera()
-        time.sleep(2)
-
-    def close(self):
-        self.camera.close()
-
     def capture(self):
         temp_picture = './resources/temp_picture.jpg'
-        self.camera.capture(temp_picture)
+        subprocess.run(["raspistill", "-o", temp_picture])
         return standardizeImage(temp_picture)        
         

@@ -9,8 +9,8 @@ class GoModel:
         white_cascade_file = "./resources/whiteCascade.xml"
         empty_cascade_file = "./resources/emptyCascade.xml"
         self.empty_cascade = cv2.CascadeClassifier(empty_cascade_file)
-        self.black_cascade = cv2.CascadeClassifier(white_cascade_file)
-        self.white_cascade = cv2.CascadeClassifier(black_cascade_file)
+        self.black_cascade = cv2.CascadeClassifier(black_cascade_file)
+        self.white_cascade = cv2.CascadeClassifier(white_cascade_file)
         self.size = size
         self.background_image = background
         if self.background_image is not None:

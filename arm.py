@@ -30,7 +30,7 @@ class Arm:
         adjacent = opposite / tan
         return adjacent * 1.2
 
-    def move_coordinate(self, x, y, z):
+    def move_position(self, x, y, z):
         theta_angle = 180 - math.degrees(math.atan(y/x))
         self.theta_motor.set_angle(theta_angle)
 

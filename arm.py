@@ -8,10 +8,11 @@ class Arm:
         self.arm2 = arm2
         self.board_size = board_size
         # next four lines are up for lots of change, have Roy ask me wtf is going on
-        self.theta_motor = Motor(180, 2, 12, 11, 50)
-        self.base_motor = Motor(180, 2, 12, 12, 50)
+        # Motor(range of motion, minimum duty, maximum duty, power port, hertz)
+        self.theta_motor = Motor(180, 2, 12, 0, 50)
+        self.base_motor = Motor(180, 2, 12, 11, 50)
         self.elbow_motor = Motor(180, 2, 12, 13, 50)
-        self.dropper_motor = Motor(180, 2, 12, 14, 50)
+        self.dropper_motor = Motor(180, 2, 12, 15, 50)
         self.cam_fov = cam_fov
         self.rel_x = rel_x
         self.rel_y = rel_y
@@ -43,6 +44,11 @@ class Arm:
 
         elbow_angle = loc_angle(total_distance, self.arm1, self.arm2)
         self.elbow_motor.set_angle(elbow_angle)
+
+    def drop_piece(self):
+        self.dropper_motor.set_angle(180)
+        self.dropper_motor.stall(0.5)
+        self.dropper_motor.set_angle(0)
 
 
 def loc_angle(c, a, b):

@@ -9,6 +9,7 @@ class GameEngine (object):
         self.other_player_tile_ = enums.TileType.WHITE_TILE
         self.board_queue_ = []
         self.group_array_ = []
+        self.temp_group_array_ = []
         self.Initialize_Board_Queue
 
     def Initialize_Board_Queue (self):
@@ -18,24 +19,36 @@ class GameEngine (object):
 
     def Validate_Board (self, new_board):
         self.Find_Current_Player_Tile
-        difference_count = self.Count_Board_Differences
+        self.board_queue_.add(0, new_board)
+        difference_count = self.Count_Board_Differences()
         
         # easy invalid changes
         if difference_count[0] == 0:
+            self.board_queue_.pop(0)
             return enums.ChangeType.NO_CHANGE # no new tiles
         elif difference_count[1] != 1:
+            self.board_queue_.pop(0)
             return enums.ChangeType.INVALID_CHANGE # incorrect number of new tiles of current player
         elif difference_count[2] != 0:
+            self.board_queue_.pop(0)
             return enums.ChangeType.INVALID_CHANGE # incorrect number of new tiles of other player
         elif difference_count[3] != 0:
+            self.board_queue_.pop(0)
             return enums.ChangeType.INVALID_CHANGE # incorrect number of swapped tiles
         elif difference_count[4] != 0:
+            self.board_queue_.pop(0)
             return enums.ChangeType.INVALID_CHANGE # incorrect number of removed tiles of current players
 
         if difference_count[5] > 0:
             if not self.Is_Valid_Removal():
+                self.board_queue_.pop(0)
                 return enums.ChangeType.INVALID_CHANGE
 
+        new_piece = self.Find_New_Piece()
+        self.Update_Groups(new_piece)
+        #FINISH LATER
+        
+        self.board_queue_.pop(0)
         return enums.ChangeType.VALID_CHANGE
         
         
@@ -199,6 +212,10 @@ class GameEngine (object):
                         coordinates = (row, col)
                         return coordinates
 
+    def Update_Groups (self, new_piece):
+        self.temp_group_array_ = self.group_array_
+        #FINISH LATER
+
     def Find_Group_For_Piece (self, coordinates):
         for group in self.group_array_:
             group_tiles = group.Get_Tiles()
@@ -215,7 +232,9 @@ class GameEngine (object):
         self.board_queue_.add(0, new_board)
         self.board_queue_.pop()
 
-        self.Update_Board_State
+        self.group_array_ = self.temp_gorup_array_
+
+        self.Update_Board_State()
 
         self.Swap_Current_Player()
 
@@ -226,9 +245,11 @@ class GameEngine (object):
             self.current_player_.Take_Turn
 
     def Update_Board_State (self):
+        #FINISH LATER
         pass
 
     def Find_Possible_Moves (self, player):
+        #FINISH LATER
         pass
 
     def Count_Board_Differences (self):
@@ -281,4 +302,3 @@ class GameEngine (object):
             self.current_player_ = self.white_player_
         else:
             self.current_player_ = self.black_player_
-

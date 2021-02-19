@@ -241,8 +241,9 @@ class GameEngine (object):
         self.Find_Possible_Moves(self.current_player_)
 
         # AI take turn
-        if self.current_player_.Is_AI:
-            self.current_player_.Take_Turn
+        if self.current_player_.Is_AI():
+            #self.current_player_.Take_Turn
+            self.current_player_.Take_Random_Turn(board_queue_[0])
 
     def Update_Board_State (self):
         #FINISH LATER

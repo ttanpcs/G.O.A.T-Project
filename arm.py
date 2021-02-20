@@ -9,10 +9,10 @@ class Arm:
         self.board_size = board_size
         # next four lines are up for lots of change, have Roy ask me wtf is going on
         # Motor(range of motion, minimum duty, maximum duty, power port, hertz)
-        self.theta_motor = Motor(180, 2, 12, 0, 50)
-        self.base_motor = Motor(180, 2, 12, 11, 50)
-        self.elbow_motor = Motor(180, 2, 12, 13, 50)
-        self.dropper_motor = Motor(180, 2, 12, 15, 50)
+        self.theta_motor = Motor(180, 2, 12, 0, 50, False)
+        self.base_motor = Motor(180, 2, 12, 11, 50, False)
+        self.elbow_motor = Motor(180, 2, 12, 13, 50, False)
+        self.dropper_motor = Motor(180, 2, 12, 15, 50, False)
         self.cam_fov = cam_fov
         self.rel_x = rel_x
         self.rel_y = rel_y

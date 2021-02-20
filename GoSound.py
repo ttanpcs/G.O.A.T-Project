@@ -1,6 +1,5 @@
 import subprocess
 
-
 class GoSound():
     def __init__(self, dir_file_path = None, sound_type = "default"):
         if (dir_file_path is not None):

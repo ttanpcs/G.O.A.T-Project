@@ -38,7 +38,7 @@ class Motor:
 
         GPIO.output(self.pinnum, True)
         pwm.ChangeDutyCycle(duty)
-        sleep(1)
+        sleep(.5)
         GPIO.output(self.pinnum, False)
         pwm.ChangeDutyCycle(0)
 

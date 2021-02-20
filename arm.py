@@ -3,7 +3,7 @@ import math
 
 class Arm:
 
-    def __init__(self, arm1, arm2, board_size, cam_fov, rel_x, rel_y): 
+    def __init__(self, arm1, arm2, board_size, cam_fov, rel_x, rel_y, dropper_offset): 
         self.arm1 = arm1
         self.arm2 = arm2
         self.board_size = board_size
@@ -16,6 +16,7 @@ class Arm:
         self.cam_fov = cam_fov
         self.rel_x = rel_x
         self.rel_y = rel_y
+        self.dropper_offset = dropper_offset
 
     def rotate_theta(self, angle):
         self.theta_motor.set_angle(angle)
@@ -35,7 +36,7 @@ class Arm:
         theta_angle = 180 - math.degrees(math.atan(y/x))
         self.theta_motor.set_angle(theta_angle)
 
-        base_distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
+        base_distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2)) - self.dropper_offset
         base_angle_p1 = math.atan(z/base_distance)
         total_distance = math.sqrt(math.pow(base_distance, 2) + math.pow(z, 2))
         base_angle_p2 = loc_angle(self.arm2, self.arm1, total_distance)

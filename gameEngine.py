@@ -1,27 +1,28 @@
 import enums, constants, player, board, group
 
 class GameEngine (object):
-    def __init__ (self):
-        self.black_player_ = player.Player(False)
-        self.white_player_ = player.Player(False)
+    def __init__ (self, black_player, white_player):
+        self.black_player_ = black_player
+        self.white_player_ = white_player
         self.current_player_ = self.black_player_
         self.current_player_tile_ = enums.TileType.BLACK_TILE
         self.other_player_tile_ = enums.TileType.WHITE_TILE
         self.board_queue_ = []
         self.group_array_ = []
         self.temp_group_array_ = []
-        self.Initialize_Board_Queue
+        self.Initialize_Board_Queue()
 
     def Initialize_Board_Queue (self):
-        self.board_queue_.add(0, board.Board())
-        self.board_queue_.add(0, board.Board())
-        self.board_queue_.add(0, board.Board())
+        self.board_queue_.insert(0, board.Board())
+        self.board_queue_.insert(0, board.Board())
+        self.board_queue_.insert(0, board.Board())
 
     def Validate_Board (self, new_board):
         self.Find_Current_Player_Tile
-        self.board_queue_.add(0, new_board)
+        self.board_queue_.insert(0, new_board)
         difference_count = self.Count_Board_Differences()
         
+        #print(difference_count)
         # easy invalid changes
         if difference_count[0] == 0:
             self.board_queue_.pop(0)
@@ -37,12 +38,12 @@ class GameEngine (object):
             return enums.ChangeType.INVALID_CHANGE # incorrect number of swapped tiles
         elif difference_count[4] != 0:
             self.board_queue_.pop(0)
-            return enums.ChangeType.INVALID_CHANGE # incorrect number of removed tiles of current players
+            return enums.ChangeType.INVALID_CHANGE # incorrect number of removed tiles of current player
 
-        if difference_count[5] > 0:
-            if not self.Is_Valid_Removal():
-                self.board_queue_.pop(0)
-                return enums.ChangeType.INVALID_CHANGE
+#        if difference_count[5] > 0:
+#            if not self.Is_Valid_Removal():
+#                self.board_queue_.pop(0)
+#                return enums.ChangeType.INVALID_CHANGE
 
         new_piece = self.Find_New_Piece()
         self.Update_Groups(new_piece)
@@ -93,31 +94,31 @@ class GameEngine (object):
         for tile in group_tiles:
             tile_row, tile_col = tile
             if tile_row == 0:
-                if current_board[tile_row + 1][tile_col] != self.current_player_tile_:
-                    if current_board[tile_row + 1][tile_col] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row + 1, tile_col) != self.current_player_tile_:
+                    if current_board.getPiece(tile_row + 1, tile_col) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row + 1, tile_col)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
                 else:
                     return False
             elif tile_row == constants.GO_BOARD_LENGTH - 1:
-                if current_board[tile_row - 1][tile_col] != self.current_player_tile_:
-                     if current_board[tile_row - 1][tile_col] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row - 1, tile_col) != self.current_player_tile_:
+                     if current_board.getPiece(tile_row - 1, tile_col) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row - 1, tile_col)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
                 else:
                     return False
             else:
-                if current_board[tile_row + 1][tile_col] != self.current_player_tile_:
-                    if current_board[tile_row + 1][tile_col] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row + 1, tile_col) != self.current_player_tile_:
+                    if current_board.getPiece(tile_row + 1, tile_col) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row + 1, tile_col)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
                 else:
                     return False
-                if current_board[tile_row - 1][tile_col] != self.current_player_tile_:
-                     if current_board[tile_row - 1][tile_col] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row - 1, tile_col) != self.current_player_tile_:
+                     if current_board.getPiece(tile_row - 1, tile_col) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row - 1, tile_col)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
@@ -125,31 +126,31 @@ class GameEngine (object):
                     return False
 
             if tile_col == 0:
-                if current_board[tile_row][tile_col + 1] != self.current_player_tile_:
-                    if current_board[tile_row][tile_col + 1] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row, tile_col + 1) != self.current_player_tile_:
+                    if current_board.getPiece(tile_row, tile_col + 1) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row, tile_col + 1)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
                 else:
                     return False
             elif tile_col == constants.GO_BOARD_LENGTH - 1:
-                if current_board[tile_row][tile_col - 1] != self.current_player_tile_:
-                     if current_board[tile_row][tile_col - 1] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row, tile_col -1) != self.current_player_tile_:
+                     if current_board.getPiece(tile_row, tile_col - 1) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row, tile_col - 1)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
                 else:
                     return False
             else:
-                if current_board[tile_row][tile_col + 1] != self.current_player_tile_:
-                    if current_board[tile_row][tile_col + 1] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row, tile_col + 1) != self.current_player_tile_:
+                    if current_board.getPiece(tile_row, tile_col + 1) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row, tile_col + 1)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
                 else:
                     return False
-                if current_board[tile_row][tile_col - 1] != self.current_player_tile_:
-                     if current_board[tile_row][tile_col - 1] == enums.TileType.NO_TILE:
+                if current_board.getPiece(tile_row, tile_col - 1) != self.current_player_tile_:
+                     if current_board.getPiece(tile_row, tile_col - 1) == enums.TileType.NO_TILE:
                         empty_tile_coordinates = (tile_row, tile_col - 1)
                         if not self.Is_Piece_Part_Of_Group(empty_tile_coordinates, group):
                             return False
@@ -162,23 +163,23 @@ class GameEngine (object):
         current_board = self.board_queue_[0]
         tile_row, tile_col = coordinates
         if tile_row == 0:
-            if current_board[tile_row + 1][tile_col] != self.other_player_tile_:
+            if current_board.getPiece(tile_row + 1, tile_col) != self.other_player_tile_:
                 return False
         elif tile_row == constants.GO_BOARD_LENGTH - 1:
-            if current_board[tile_row - 1][tile_col] != self.other_player_tile_:
+            if current_board.getPiece(tile_row - 1, tile_col) != self.other_player_tile_:
                 return False
         else:
-            if current_board[tile_row + 1][tile_col] != self.other_player_tile_ and current_board[tile_row - 1][tile_col] != self.other_player_tile_:
+            if current_board.getPiece(tile_row + 1, tile_col) != self.other_player_tile_ and current_board[tile_row - 1][tile_col] != self.other_player_tile_:
                 return False
 
         if tile_col == 0:
-            if current_board[tile_row][tile_col + 1] != self.other_player_tile_:
+            if current_board.getPiece(tile_row, tile_col + 1) != self.other_player_tile_:
                 return False
         elif tile_col == constants.GO_BOARD_LENGTH - 1:
-            if current_board[tile_row][tile_col - 1] != self.other_player_tile_:
+            if current_board.getPiece(tile_row, tile_col - 1) != self.other_player_tile_:
                 return False
         else:
-            if current_board[tile_row][tile_col + 1] != self.other_player_tile_ and current_board[tile_row][tile_col - 1] != self.other_player_tile_:
+            if current_board.getPiece(tile_row, tile_col + 1) != self.other_player_tile_ and current_board[tile_row][tile_col - 1] != self.other_player_tile_:
                 return False
 
         return True
@@ -190,9 +191,9 @@ class GameEngine (object):
 
         for row in range(constants.GO_BOARD_LENGTH):
             for col in range(constants.GO_BOARD_LENGTH):
-                current_tile = current_board[row][col]
+                current_tile = current_board.getPiece(row,col)
                 if current_tile == enums.TileType.NO_TILE:
-                    previous_tile = previous_board[row][col]
+                    previous_tile = previous_board.getPiece(row,col)
                     if previous_tile == self.other_player_tile_:
                         coordinates = (row, col)
                         removed_piece_array.append(coordinates)
@@ -205,9 +206,9 @@ class GameEngine (object):
 
         for row in range(constants.GO_BOARD_LENGTH):
             for col in range(constants.GO_BOARD_LENGTH):
-                previous_tile = previous_board[row][col]
+                previous_tile = previous_board.getPiece(row,col)
                 if previous_tile == enums.TileType.NO_TILE:
-                    current_tile = current_board[row][col]
+                    current_tile = current_board.getPiece(row,col)
                     if current_tile == self.current_player_tile_:
                         coordinates = (row, col)
                         return coordinates
@@ -229,14 +230,15 @@ class GameEngine (object):
 
     def Process_Turn (self, new_board):
         # add new board to queue and remove old board
-        self.board_queue_.add(0, new_board)
+        self.board_queue_.insert(0, new_board)
         self.board_queue_.pop()
 
-        self.group_array_ = self.temp_gorup_array_
+        self.group_array_ = self.temp_group_array_
 
         self.Update_Board_State()
 
         self.Swap_Current_Player()
+        self.Find_Current_Player_Tile()
 
         self.Find_Possible_Moves(self.current_player_)
 
@@ -264,12 +266,14 @@ class GameEngine (object):
         
         for row in range(constants.GO_BOARD_LENGTH):
             for col in range(constants.GO_BOARD_LENGTH):
-                current_tile = current_board[row][col]
-                if current_tile == previous_board[row][col]:
-                    break
+                current_tile = current_board.getPiece(row,col)
+                if current_tile == previous_board.getPiece(row,col):
+                    pass
                 else:
+                    #print(row, " - ", col)
+                    #print(current_tile, " - ", previous_board.getPiece(row, col))
                     difference_count[0] += 1 # total
-                    previous_tile = previous_board[row][col]
+                    previous_tile = previous_board.getPiece(row,col)
                     if previous_tile == enums.TileType.NO_TILE:
                         if current_tile == self.current_player_tile_:
                             difference_count[1] += 1 # current new

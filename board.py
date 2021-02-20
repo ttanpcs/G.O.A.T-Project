@@ -1,11 +1,34 @@
 import enums, constants
 
-class Board (object):
-    def __init__ (self):
-        self.board_tiles_ = [[enums.TileType.NO_TILE] * constants.GO_BOARD_LENGTH] * constants.GO_BOARD_LENGTH
+import numpy as np
 
-    def Find_Tile (self, x, y):
-        return self.board_tiles_[x][y]
+class Board():
+    def countNumPieces(self):
+        self.num_pieces = 0
+        for i in self.board:
+            for j in i:
+                if (j != 0):
+                    self.num_pieces += 1
+                    
+    def __init__(self, size = constants.GO_BOARD_LENGTH, board = None, num_pieces = 0):
+        if (board is not None):
+            self.board = board
+            if (num_pieces != 0):
+                self.num_pieces = num_pieces
+            else:
+                self.countNumPieces()
+        else:
+            self.board = np.full((size, size), enums.TileType.NO_TILE, dtype = enums.TileType)
+            self.num_pieces = 0
 
-    def Set_Tile (self, x, y, tile_type):
-        self.board_tiles_[x][y] = tile_type
+    def setPiece(self, x, y, value):
+        self.board[x][y] = value
+
+    def getPiece(self, x, y):
+        return self.board[x][y]
+
+    def getBoard(self):
+        return self.board
+    
+    def getNumPieces(self):
+        return self.num_pieces

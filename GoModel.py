@@ -254,9 +254,9 @@ class GoModel:
             keypoints = self.findKeypoints(image)            
             num_valid_keypoints = self.mergeBoard(keypoints, self.background_corners, is_black_turn, cascade_output, output) 
             if ((self.last_board).getNumPieces() + 1 < num_valid_keypoints):
-                print("Number Issue")
-                print((self.last_board).getNumPieces() + 1)
-                print(num_valid_keypoints)
+                # print("Number Issue")
+                # print((self.last_board).getNumPieces() + 1)
+                # print(num_valid_keypoints)
                 return None
 
             self.last_board = gb.GoBoard(board = output, num_pieces = num_valid_keypoints)
@@ -264,5 +264,3 @@ class GoModel:
             self.last_board = gb.GoBoard(board = cascade_output)
         
         return self.last_board.getBoard()
-
-# Have a min size for goPieces -> This needs some testing.

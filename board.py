@@ -7,10 +7,10 @@ class Board():
         self.num_pieces = 0
         for i in self.board:
             for j in i:
-                if (j != 0):
+                if (j != ):
                     self.num_pieces += 1
                     
-    def __init__(self, size = constants.GO_BOARD_LENGTH, board = None, num_pieces = 0):
+    def __init__(self, size = 19, board = None, num_pieces = 0):
         if (board is not None):
             self.board = board
             if (num_pieces != 0):

@@ -1,7 +1,8 @@
 import numpy as np
 import random
 import cv2
-import GoBoard as gb 
+import board as gb 
+import enums
 
 class GoModel:
     def __init__(self, size, background = None):
@@ -17,7 +18,7 @@ class GoModel:
             a, self.background_corners = self.findCriticalPoints(self.background_image)
         else:
             self.background_corners = None
-        self.last_board = gb.GoBoard(size = self.size)
+        self.last_board = gb.Board(size = self.size)
 
     def mergeBoard(self, keypoints, corners, is_black_turn, cascade_output, output):
         num_valid_keypoints = 0
@@ -37,14 +38,14 @@ class GoModel:
                     y = int(round(i[1]))
                     if x >= 0 and x < self.size and y >= 0 and y < self.size:
                         num_valid_keypoints += 1
-                        if (self.last_board.getPiece(x, y) != 0 and self.last_board.getPiece(x, y) != 3 ):
+                        if (self.last_board.getPiece(x, y) != enums.TileType.NO_TILE and self.last_board.getPiece(x, y) != enums.TileType.BOGUS_TILE):
                             output[x][y] = self.last_board.getPiece(x, y)
-                        elif (cascade_output[x][y] != 0 and cascade_output[x][y] != 3):
+                        elif (cascade_output[x][y] != enums.TileType.NO_TILE and cascade_output[x][y] != enums.TileType.BOGUS_TILE):
                             output[x][y] = cascade_output[x][y]
                         elif (is_black_turn):
-                            output[x][y] = 1
+                            output[x][y] = enums.TileType.BLACK_TILE
                         else:
-                            output[x][y] = 2
+                            output[x][y] = enums.TileType.WHIE_TILE
         return num_valid_keypoints
 
     def createBoard(self, centers, corners, output): 
@@ -56,7 +57,7 @@ class GoModel:
                                 dtype="float32")
             persp = cv2.getPerspectiveTransform(corners, flat_corners)
             types = ["black_rectangles", "white_rectangles"]
-            numerical_values = {"black_rectangles": 1, "white_rectangles": 2}
+            numerical_values = {"black_rectangles": enums.TileType.BLACK_TILE, "white_rectangles": enums.TileType.WHITE_TILE}
             for stone in types:
                 if len(centers[stone]) > 0:
                     stones = np.array(centers[stone], dtype="float32")
@@ -66,10 +67,10 @@ class GoModel:
                         x = int(round(i[0]))
                         y = int(round(i[1]))
                         if x >= 0 and x < self.size and y >= 0 and y < self.size:
-                            if (output[x][y] == 0):
+                            if (output[x][y] == enums.TileType.NO_TILE):
                                 output[x][y] = numerical_values[stone]
                             else:
-                                output[x][y] = 3
+                                output[x][y] = enums.TileType.BOGUS_TILE
 
     def sortPoints(self, box):
         rect = np.zeros((4, 2), dtype = "float32")
@@ -245,12 +246,12 @@ class GoModel:
         return detector.detect(difference) 
 
     def readBoard(self, image, is_black_turn = False):
-        cascade_output = np.zeros((self.size, self.size), dtype = int)
+        cascade_output = np.full((size, size), enums.TileType.NO_TILE, dtype = enums.TileType)
         centers = self.findCenters(image)
         self.createBoard(centers, self.background_corners, cascade_output)
 
         if (self.background_image is not None):
-            output = np.zeros((self.size, self.size), dtype = int)
+            output = np.full((size, size), enums.TileType.NO_TILE, dtype = enums.TileType)
             keypoints = self.findKeypoints(image)            
             num_valid_keypoints = self.mergeBoard(keypoints, self.background_corners, is_black_turn, cascade_output, output) 
             if ((self.last_board).getNumPieces() + 1 < num_valid_keypoints):
@@ -259,8 +260,8 @@ class GoModel:
                 # print(num_valid_keypoints)
                 return None
 
-            self.last_board = gb.GoBoard(board = output, num_pieces = num_valid_keypoints)
+            self.last_board = gb.Board(board = output, num_pieces = num_valid_keypoints)
         else:
-            self.last_board = gb.GoBoard(board = cascade_output)
+            self.last_board = gb.Board(board = cascade_output)
         
         return self.last_board.getBoard()

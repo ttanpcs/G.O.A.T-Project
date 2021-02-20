@@ -4,6 +4,7 @@ class TileType(Enum):
     NO_TILE = 1
     BLACK_TILE = 2
     WHITE_TILE = 3
+    BOGUS_TILE = 4
 
 class ChangeType(Enum):
     VALID_CHANGE = 1

@@ -1,7 +1,9 @@
 import GoCamera as gc
 import GoModel as gm
 import GoSound as gs
+import gameEngine as ge
 import time
+import enums
 import sys
 
 def findPlayerMapping(player_type):
@@ -18,12 +20,14 @@ def initialize(sound_type, board_size, board_offset, board_dimension, black_play
     background_photo = camera.capture()
     model = gm.GoModel(board_dimension, background_photo)
     sound = gs.GoSound(sound_type = sound_type)
+    engine = ge.GameEngine(black_player_type, white_player_type, board_size)
 
-    return camera, model, sound # arm, gameEngine
+    return camera, model, sound, engine # arm, 
 
 def main(sound_type, board_size, board_offset, board_dimension, black_player, white_player):
-    camera, model, sound = initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player) # arm, gameEngine
+    camera, model, sound, engine = initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player) # arm, gameEngine
     game_ongoing = True 
+    is_black_turn = False
     black_passed = False
     white_passed = False
 
@@ -34,14 +38,24 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
         else:      
             time.sleep(15)
             current_image = camera.capture()
-            current_board = model.readBoard(current_image) # ,the current player from gameEngine
+            if (engine.Get_Current_Player_Tile == enums.TileType.BLACK_TILE):
+                is_black_turn = True
+            else:
+                is_black_turn = False
+            current_board = model.readBoard(current_image, is_black_turn)
             if (current_board is not None):
-                # current_change_type = validateBoard(current_board)
-                # if (current_change_type == ValidChange):
-                #   Process_Turn()
-                # elif (current_change_type == InvalidChange)
-                # else: 
-                #   print ("No change detected from ") # DELETE LATER (Error Check # 2)
+                current_change_type = engine.Validate_Board(current_board)
+                if (current_change_type == enums.ChangeType.VALID_CHANGE):
+                    coordinates = None
+                    if (is_black_turn):
+                        black_passed, coordinates = engine.Process_Turn(current_board)
+                    else:
+                        white_passed, coordinates = engine.Process_Turn(current_board)
+                elif (current_change_type == InvalidChange):
+                    print ("Invalid change detected") # DELETE LATER (Error Check # 3)
+                    # Plays cheating sound
+                else: 
+                    print ("No change detected") # DELETE LATER (Error Check # 2)
             else:
                 print("Board is None according to vision") # DELETE LATER (Error Check # 1)
                 model.showBoard(current_image) # DELETE LATER (Error Check # 1.1)

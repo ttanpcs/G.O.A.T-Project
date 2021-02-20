@@ -10,19 +10,19 @@ class GoSound():
             self.dir_file_path = "./resources/pg"
 
     def playStartSound(self):
-        subprocess.run(["aplay", self.dir_file_path + "/start.wav"])
+        subprocess.run(["aplay", self.dir_file_path + "/Start.wav"])
 
     def playCheatSound(self):
-        subprocess.run(["aplay", self.dir_file_path + "/cheat.wav"])
+        subprocess.run(["aplay", self.dir_file_path + "/Cheat.wav"])
 
     def playWinSound(self):
-        subprocess.run(["aplay", self.dir_file_path + "/win.wav"])
+        subprocess.run(["aplay", self.dir_file_path + "/Win.wav"])
 
     def playLoseSound(self):
-        subprocess.run(["aplay", self.dir_file_path + "/lose.wav"])
+        subprocess.run(["aplay", self.dir_file_path + "/Lose.wav"])
         
     def playEndSound(self):
-        subprocess.run(["aplay", self.dir_file_path + "/end.wav"])
+        subprocess.run(["aplay", self.dir_file_path + "/End.wav"])
 
     def playPassSound(self):
-        subprocess.run(["aplay", self.dir_file_path + "/pass.wav"])
+        subprocess.run(["aplay", self.dir_file_path + "/Pass.wav"])

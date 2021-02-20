@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import random
 import board
 import numpy as np
-import constants, enums
+import enums
 
 class Player (ABC):
     def __init__ (self, is_AI, tile_type):
@@ -28,8 +28,8 @@ class HumanPlayer (Player):
 class RandomAIPlayer (Player):
     def Take_Turn (self, board):
         random.seed()
-        x = random.randint(0, constants.GO_BOARD_LENGTH)
-        y = random.randint(0, constants.GO_BOARD_LENGTH)
+        x = random.randint(0, board.getSize())
+        y = random.randint(0, board.getSize())
 
         while (board.getPiece(x, y) != enums.TileType.NO_TILE):
             x = random.randint(0, constants.GO_BOARD_LENGTH)

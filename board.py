@@ -1,4 +1,4 @@
-import enums, constants
+import enums
 
 import numpy as np
 
@@ -11,6 +11,7 @@ class Board():
                     self.num_pieces += 1
                     
     def __init__(self, size = 19, board = None, num_pieces = 0):
+        self.size = size
         if (board is not None):
             self.board = board
             if (num_pieces != 0):
@@ -20,6 +21,9 @@ class Board():
         else:
             self.board = np.full((size, size), enums.TileType.NO_TILE, dtype = enums.TileType)
             self.num_pieces = 0
+    
+    def getSize(self):
+        return self.size
 
     def setPiece(self, x, y, value):
         self.board[x][y] = value

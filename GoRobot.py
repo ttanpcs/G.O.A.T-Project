@@ -2,6 +2,7 @@ import GoCamera as gc
 import GoModel as gm
 import GoSound as gs
 import gameEngine as ge
+import player
 import time
 import enums
 import sys
@@ -10,17 +11,17 @@ def playSound(is_black_turn, bp_is_ai, wp_is_ai, sound, sound_function):
     if ((is_black_turn and bp_is_ai) or ((not is_black_turn) and wp_is_ai)):
         sound_function(sound)
 
-def findPlayerMapping(player_type):
+def findPlayerMapping(player_type, tile_type):
     if (player_type == "human_player"):
-        return ... # Wtvr its called
+        return player.HumanPlayer(False, tile_type)
     elif (player_type == "random_ai_player"):
-        return ... # Wtvr its called 
+        return .player.RandomAIPlayer(True, tile_type)
 
 def initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player):
     camera = gc.GoCamera()
     background_not_ready = True
-    white_player_type = findPlayerMapping(white_player) # Could be really cancer if pointers
-    black_player_type = findPlayerMapping(black_player) # Could be really cancer if pointers
+    white_player_type = findPlayerMapping(white_player, enums.TileType.WHITE_TILE) # Could be really cancer if pointers
+    black_player_type = findPlayerMapping(black_player, enums.TileType.BLACK_TILE) # Could be really cancer if pointers
     background_photo = camera.capture()
     model = gm.GoModel(board_dimension, background_photo)
     sound = gs.GoSound(sound_type = sound_type)
@@ -34,9 +35,10 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
     is_black_turn = False
     black_passed = False
     white_passed = False
+    sound.playStartSound()
 
     while (game_ongoing):
-        if (black_passed and white_passed): # this comes from the tuple of Player take_turn.
+        if (black_passed and white_passed):
             game_ongoing = False
             # Figure out who won and do smth.... 
         else:      
@@ -53,8 +55,16 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
                     coordinates = None
                     if (is_black_turn):
                         black_passed, coordinates = engine.Process_Turn(current_board)
+                        if (black_passed):
+                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
+                        else:    
+                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
                     else:
                         white_passed, coordinates = engine.Process_Turn(current_board)
+                        if (white_passed):
+                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
+                        else:    
+                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
                 elif (current_change_type == InvalidChange):
                     print ("Invalid change detected") # DELETE LATER (Error Check # 3)
                     playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)

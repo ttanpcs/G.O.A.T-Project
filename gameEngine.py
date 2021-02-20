@@ -1,4 +1,4 @@
-import enums, constants, player, board, group
+import enums, player, board, group
 
 class GameEngine (object):
     def __init__ (self, black_player, white_player, board_size):
@@ -263,10 +263,7 @@ class GameEngine (object):
         
         will_pass = False
         current_turn = np.array([-1, -1])
-        if (self.Get_Current_Player_Tile() == enums.TileType.BLACK_TILE):
-            will_pass, current_turn = black_player.Take_Turn
-        else:
-            will_pass, current_turn = white_player.Take_Turn
+        will_pass, current_turn = current_player_.Take_Turn
 
         self.Swap_Current_Player()
         self.Find_Current_Player_Tile()

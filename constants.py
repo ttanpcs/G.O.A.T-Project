@@ -1,0 +1,1 @@
+GO_BOARD_LENGTH = 19

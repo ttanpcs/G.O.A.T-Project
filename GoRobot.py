@@ -6,6 +6,10 @@ import time
 import enums
 import sys
 
+def playSound(is_black_turn, bp_is_ai, wp_is_ai, sound, sound_function):
+    if ((is_black_turn and bp_is_ai) or ((not is_black_turn) and wp_is_ai)):
+        sound_function(sound)
+
 def findPlayerMapping(player_type):
     if (player_type == "human_player"):
         return ... # Wtvr its called
@@ -53,7 +57,7 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
                         white_passed, coordinates = engine.Process_Turn(current_board)
                 elif (current_change_type == InvalidChange):
                     print ("Invalid change detected") # DELETE LATER (Error Check # 3)
-                    # Plays cheating sound
+                    playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)
                 else: 
                     print ("No change detected") # DELETE LATER (Error Check # 2)
             else:

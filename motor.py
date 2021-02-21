@@ -43,5 +43,4 @@ class Motor:
         pwm.ChangeDutyCycle(0)
 
         pwm.stop()
-        GPIO.cleanup()
         self.angle = angle

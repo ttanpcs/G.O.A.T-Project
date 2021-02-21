@@ -15,7 +15,7 @@ def findPlayerMapping(player_type, tile_type):
     if (player_type == "human_player"):
         return player.HumanPlayer(False, tile_type)
     elif (player_type == "random_ai_player"):
-        return .player.RandomAIPlayer(True, tile_type)
+        return player.RandomAIPlayer(True, tile_type)
 
 def initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player):
     camera = gc.GoCamera()
@@ -35,7 +35,8 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
     is_black_turn = False
     black_passed = False
     white_passed = False
-    sound.playStartSound()
+    # sound.playStartSound()
+    print("Start")
 
     while (game_ongoing):
         if (black_passed and white_passed):
@@ -49,6 +50,7 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
             else:
                 is_black_turn = False
             current_board = model.readBoard(current_image, is_black_turn)
+            print(current_board)
             if (current_board is not None):
                 current_change_type = engine.Validate_Board(current_board)
                 if (current_change_type == enums.ChangeType.VALID_CHANGE):
@@ -56,33 +58,38 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
                     if (is_black_turn):
                         black_passed, coordinates = engine.Process_Turn(current_board)
                         if (black_passed):
-                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
+                            # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
+                            print("black passed")
                         else:    
-                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
+                            # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
+                            print("black end")
                     else:
                         white_passed, coordinates = engine.Process_Turn(current_board)
                         if (white_passed):
-                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
+                            # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
+                            print("white passed")
                         else:    
-                            playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
-                elif (current_change_type == InvalidChange):
+                            # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
+                            print("white end")
+                    print(coordinates) # DELETE LATER (Error Check # 4)
+                elif (current_change_type == enums.ChangeType.INVALID_CHANGE):
                     print ("Invalid change detected") # DELETE LATER (Error Check # 3)
-                    playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)
+                    # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)
                 else: 
                     print ("No change detected") # DELETE LATER (Error Check # 2)
             else:
                 print("Board is None according to vision") # DELETE LATER (Error Check # 1)
-                model.showBoard(current_image) # DELETE LATER (Error Check # 1.1)
+                # model.showBoard(current_image) # DELETE LATER (Error Check # 1.1)
 
 if __name__ == '__main__':
     bs = 0
     bo = 0
     bd = 19
-    st = "."
+    st = "default"
     white_player = "random_ai_player"
     black_player = "human_player"
 
-    for i in len(sys.argv):
+    for i in range(len(sys.argv)):
         if (sys.argv[i] == "--board_size" or sys.argv[i] == "-bs") and i + 1 < len(sys.argv):
             bs = sys.argv[i + 1]
         elif (sys.argv[i] == "--board_offset" or sys.argv[i] == "-bo") and i + 1 < len(sys.argv):

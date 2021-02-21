@@ -45,7 +45,7 @@ class GoModel:
                         elif (is_black_turn):
                             output[x][y] = enums.TileType.BLACK_TILE
                         else:
-                            output[x][y] = enums.TileType.WHIE_TILE
+                            output[x][y] = enums.TileType.WHITE_TILE
         return num_valid_keypoints
 
     def createBoard(self, centers, corners, output): 
@@ -246,12 +246,12 @@ class GoModel:
         return detector.detect(difference) 
 
     def readBoard(self, image, is_black_turn = False):
-        cascade_output = np.full((size, size), enums.TileType.NO_TILE, dtype = enums.TileType)
+        cascade_output = np.full((self.size, self.size), enums.TileType.NO_TILE, dtype = enums.TileType)
         centers = self.findCenters(image)
         self.createBoard(centers, self.background_corners, cascade_output)
 
         if (self.background_image is not None):
-            output = np.full((size, size), enums.TileType.NO_TILE, dtype = enums.TileType)
+            output = np.full((self.size, self.size), enums.TileType.NO_TILE, dtype = enums.TileType)
             keypoints = self.findKeypoints(image)            
             num_valid_keypoints = self.mergeBoard(keypoints, self.background_corners, is_black_turn, cascade_output, output) 
             if ((self.last_board).getNumPieces() + 1 < num_valid_keypoints):

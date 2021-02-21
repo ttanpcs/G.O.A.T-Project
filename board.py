@@ -7,7 +7,7 @@ class Board():
         self.num_pieces = 0
         for i in self.board:
             for j in i:
-                if (j != ):
+                if (j != enums.TileType.NO_TILE):
                     self.num_pieces += 1
                     
     def __init__(self, size = 19, board = None, num_pieces = 0):

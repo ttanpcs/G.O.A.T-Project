@@ -332,3 +332,6 @@ class GameEngine (object):
 
     def Is_White_Player_AI(self):
         return self.white_player_.Is_AI()
+
+    def Get_Current_Board(self):
+        return self.board_queue_[0]

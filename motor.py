@@ -25,7 +25,7 @@ class Motor:
             else:
                 self.rotate_to_angle_increment_with_stall(angle, stall_motor)
         
-     def set_angle(self, angle):
+    def set_angle(self, angle):
         if self.flipped:
             angle = 180 - angle
         while (self.angle > angle):

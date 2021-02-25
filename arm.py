@@ -19,9 +19,6 @@ class Arm:
         self.rel_z = rel_z
         self.dropper_offset = dropper_offset
 
-    def rotate_theta(self, angle):
-        self.theta_motor.set_angle(angle)
-
     def reset(self):
         default_x = 9 * self.board_size / 18 + self.rel_x
         default_y = 9 * self.board_size / 18 + self.rel_y

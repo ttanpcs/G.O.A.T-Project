@@ -12,7 +12,7 @@ class Motor:
         if (flipped):
             self.angle = 180 - init_angle
         else:
-            self.angle = angle
+            self.angle = init_angle
 
     def set_angle_with_stall(self, angle, stall_motor):
         if self.flipped:

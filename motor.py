@@ -9,7 +9,10 @@ class Motor:
         self.pinnum = pinnum
         self.hertz = hertz
         self.flipped = flipped
-        self.angle = init_angle
+        if (flipped):
+            self.angle = 180 = init_angle
+        else:
+            self.angle = angle
 
     def set_angle_with_stall(self, angle, stall_motor):
         if self.flipped:
@@ -58,7 +61,10 @@ class Motor:
         pwm.ChangeDutyCycle(0)
 
         pwm.stop()
-        self.angle = angle
+        if (self.flipped):
+            self.angle = 180 - angle
+        else:
+            self.angle = angle
 
     def rotate_to_angle_increment_with_stall(self, angle, stall_motor):
         
@@ -82,4 +88,7 @@ class Motor:
         pwm_stall.ChangeDutyCycle(0)
 
         pwm.stop()
-        self.angle = angle
+        if (self.flipped):
+            self.angle = 180 - angle
+        else:
+            self.angle = angle

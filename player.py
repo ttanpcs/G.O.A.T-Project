@@ -19,7 +19,7 @@ class Player (ABC):
 class HumanPlayer (Player):
     def Take_Turn (self, board):
         print("-----------------------------------------------------")
-        current_input = input("Type \"p\" to pass")
+        current_input = input("Type \"p\" to pass: ")
         if (current_input == "p"):
             return True, None
         else:

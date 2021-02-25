@@ -26,10 +26,10 @@ class Board():
         return self.size
 
     def setPiece(self, x, y, value):
-        self.board[x][y] = value
+        self.board[x,y] = value
 
     def getPiece(self, x, y):
-        return self.board[x][y]
+        return self.board[x,y]
 
     def getBoard(self):
         return self.board

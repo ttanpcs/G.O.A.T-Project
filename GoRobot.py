@@ -23,7 +23,7 @@ def initialize(sound_type, board_size, board_offset, board_dimension, black_play
     white_player_type = findPlayerMapping(white_player, enums.TileType.WHITE_TILE) # Could be really cancer if pointers
     black_player_type = findPlayerMapping(black_player, enums.TileType.BLACK_TILE) # Could be really cancer if pointers
     background_photo = camera.capture()
-    model = gm.GoModel(board_dimension, background_photo)
+    model = gm.GoModel(board_size, background_photo)
     sound = gs.GoSound(sound_type = sound_type)
     engine = ge.GameEngine(black_player_type, white_player_type, board_size)
 
@@ -41,18 +41,18 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
     while (game_ongoing):
         if (black_passed and white_passed):
             game_ongoing = False
-            # Figure out who won and do smth.... 
+            # Figure out who won and do smth.... Could be a 50/50 and figure it out later
         else:      
-            time.sleep(15)
+            time.sleep(3)
             current_image = camera.capture()
             if (engine.Get_Current_Player_Tile == enums.TileType.BLACK_TILE):
                 is_black_turn = True
             else:
                 is_black_turn = False
             current_board = model.readBoard(current_image, is_black_turn)
-            print(current_board)
             if (current_board is not None):
                 current_change_type = engine.Validate_Board(current_board)
+                # print(current_change_type) DELETE LATER
                 if (current_change_type == enums.ChangeType.VALID_CHANGE):
                     coordinates = None
                     if (is_black_turn):
@@ -72,19 +72,13 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
                             # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
                             print("white end")
                     print(coordinates) # DELETE LATER (Error Check # 4)
-                elif (current_change_type == enums.ChangeType.INVALID_CHANGE):
-                    print ("Invalid change detected") # DELETE LATER (Error Check # 3)
-                    # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)
-                else: 
-                    print ("No change detected") # DELETE LATER (Error Check # 2)
-            else:
-                print("Board is None according to vision") # DELETE LATER (Error Check # 1)
-                # model.showBoard(current_image) # DELETE LATER (Error Check # 1.1)
+                # elif (current_change_type == enums.ChangeType.INVALID_CHANGE):
+                    # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)                    
 
 if __name__ == '__main__':
-    bs = 0
+    bs = 19
     bo = 0
-    bd = 19
+    bd = 0
     st = "default"
     white_player = "random_ai_player"
     black_player = "human_player"

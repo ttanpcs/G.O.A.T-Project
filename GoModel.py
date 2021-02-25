@@ -39,13 +39,13 @@ class GoModel:
                     if x >= 0 and x < self.size and y >= 0 and y < self.size:
                         num_valid_keypoints += 1
                         if (self.last_board.getPiece(x, y) != enums.TileType.NO_TILE and self.last_board.getPiece(x, y) != enums.TileType.BOGUS_TILE):
-                            output[x][y] = self.last_board.getPiece(x, y)
-                        elif (cascade_output[x][y] != enums.TileType.NO_TILE and cascade_output[x][y] != enums.TileType.BOGUS_TILE):
-                            output[x][y] = cascade_output[x][y]
+                            output[x, y] = self.last_board.getPiece(x, y)
+                        elif (cascade_output[x,y] != enums.TileType.NO_TILE and cascade_output[x,y] != enums.TileType.BOGUS_TILE):
+                            output[x,y] = cascade_output[x,y]
                         elif (is_black_turn):
-                            output[x][y] = enums.TileType.BLACK_TILE
+                            output[x,y] = enums.TileType.BLACK_TILE
                         else:
-                            output[x][y] = enums.TileType.WHITE_TILE
+                            output[x,y] = enums.TileType.WHITE_TILE
         return num_valid_keypoints
 
     def createBoard(self, centers, corners, output): 
@@ -67,10 +67,10 @@ class GoModel:
                         x = int(round(i[0]))
                         y = int(round(i[1]))
                         if x >= 0 and x < self.size and y >= 0 and y < self.size:
-                            if (output[x][y] == enums.TileType.NO_TILE):
-                                output[x][y] = numerical_values[stone]
+                            if (output[x,y] == enums.TileType.NO_TILE):
+                                output[x,y] = numerical_values[stone]
                             else:
-                                output[x][y] = enums.TileType.BOGUS_TILE
+                                output[x,y] = enums.TileType.BOGUS_TILE
 
     def sortPoints(self, box):
         rect = np.zeros((4, 2), dtype = "float32")
@@ -264,4 +264,4 @@ class GoModel:
         else:
             self.last_board = gb.Board(board = cascade_output)
         
-        return self.last_board.getBoard()
+        return self.last_board 

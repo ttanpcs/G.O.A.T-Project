@@ -20,11 +20,10 @@ class GameEngine (object):
         self.board_queue_.insert(0, board.Board())
 
     def Validate_Board (self, new_board):
-        self.Find_Current_Player_Tile
+        self.Find_Current_Player_Tile()
         self.board_queue_.insert(0, new_board)
         difference_count = self.Count_Board_Differences()
         
-        #print(difference_count)
         # easy invalid changes
         if difference_count[0] == 0:
             self.board_queue_.pop(0)
@@ -279,11 +278,11 @@ class GameEngine (object):
         difference_count = []
         for x in range(6):
             difference_count.append(0)
-        
         for row in range(self.board_size_):
             for col in range(self.board_size_):
                 current_tile = current_board.getPiece(row,col)
-                if current_tile == previous_board.getPiece(row,col):
+                previous_tile = previous_board.getPiece(row,col)
+                if current_tile == previous_tile:
                     pass
                 else:
                     #print(row, " - ", col)
@@ -301,7 +300,7 @@ class GameEngine (object):
                         difference_count[4] += 1 # current removed
                     else:
                         difference_count[5] += 1 # other removed
-        
+                        
         return difference_count
 
     def Find_Current_Player_Tile(self):

@@ -54,9 +54,9 @@ class Arm:
         
 
     def drop_piece(self):
-        self.dropper_motor.set_angle(180)
+        self.dropper_motor.rotate_to_angle_increment(180)
         self.dropper_motor.stall(0.5)
-        self.dropper_motor.set_angle(0)
+        self.dropper_motor.rotate_to_angle_increment(0)
 
     def move_to_board_coord(self, x, y):
         total_x = x * self.board_size / 18 + self.rel_x

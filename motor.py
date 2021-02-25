@@ -44,8 +44,8 @@ class Motor:
         sleep(stalltime)
 
     def rotate_to_angle_increment(self, angle):
-        print(angle)
         duty = (angle/self.range) * (self.maxduty - self.minduty) + self.minduty
+        print(duty)
 
         GPIO.setup(self.pinnum, GPIO.OUT)
         pwm=GPIO.PWM(self.pinnum, self.hertz)

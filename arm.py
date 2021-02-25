@@ -23,8 +23,8 @@ class Arm:
         self.theta_motor.set_angle(angle)
 
     def reset(self):
-        default_x = 8 * self.board_size / 18 + self.rel_x
-        default_y = 8 * self.board_size / 18 + self.rel_y
+        default_x = 9 * self.board_size / 18 + self.rel_x
+        default_y = 9 * self.board_size / 18 + self.rel_y
         self.move_position_default(default_x, default_y, self.calculate_min_height)
 
     def calculate_min_height(self):

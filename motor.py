@@ -10,7 +10,7 @@ class Motor:
         self.hertz = hertz
         self.flipped = flipped
         if (flipped):
-            self.angle = 180 = init_angle
+            self.angle = 180 - init_angle
         else:
             self.angle = angle
 

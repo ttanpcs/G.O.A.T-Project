@@ -11,7 +11,7 @@ class Arm:
         # Motor(range of motion, minimum duty, maximum duty, power port, hertz, flipped?)
         self.theta_motor = motor.Motor(180, 2, 12, 15, 50, False, 90)
         self.base_motor = motor.Motor(180, 2, 12, 11, 50, False, 90)
-        self.elbow_motor = motor.Motor(180, 2, 12, 13, 50, True, 45)
+        self.elbow_motor = motor.Motor(180, 2, 12, 13, 50, True, 135)
         self.dropper_motor = motor.Motor(180, 2, 12, 16, 50, False, 0)
         self.cam_fov = cam_fov
         self.rel_x = rel_x

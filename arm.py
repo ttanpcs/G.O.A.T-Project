@@ -36,13 +36,13 @@ class Arm:
         if (x == 0):
             theta_angle = 90
         else:
-            tan_angle = math.atan(y/x)
+            tan_angle = math.degrees(math.atan(y/x))
             if (tan_angle < 0):
                 tan_angle = tan_angle + 180
             theta_angle = 180 - tan_angle
         
         base_distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2)) - offset
-        base_angle_p1 = math.atan(z/base_distance)
+        base_angle_p1 = math.degrees(math.atan(z/base_distance))
         total_distance = math.sqrt(math.pow(base_distance, 2) + math.pow(z, 2))
         base_angle_p2 = loc_angle(self.arm2, self.arm1, total_distance)
         base_angle = base_angle_p1 + base_angle_p2

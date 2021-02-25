@@ -33,7 +33,13 @@ class Arm:
         return adjacent * 1.2
 
     def move_position_offset(self, x, y, z, offset):
-        theta_angle = 180 - math.degrees(math.atan(y/x))
+        if (x == 0):
+            theta_angle = 90
+        else:
+            tan_angle = math.atan(y/x)
+            if (tan_angle < 0):
+                tan_angle = tan_angle + 180
+            theta_angle = 180 - tan_angle
         
         base_distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2)) - offset
         base_angle_p1 = math.atan(z/base_distance)

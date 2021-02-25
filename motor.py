@@ -65,7 +65,7 @@ class Motor:
         duty = (angle/self.range) * (self.maxduty - self.minduty) + self.minduty
         stall_duty = (stall_motor.angle/stall_motor.range) * (stall_motor.maxduty - stall_motor.minduty) + stall_motor.minduty
 
-        print("" + duty + " " + stall_duty)
+        print("" + str(duty) + " " + str(stall_duty))
         GPIO.setup(self.pinnum, GPIO.OUT)
         GPIO.setup(stall_motor.pinnum, GPIO.OUT)
         pwm=GPIO.PWM(self.pinnum, self.hertz)

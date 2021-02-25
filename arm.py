@@ -44,13 +44,13 @@ class Arm:
         elbow_angle = loc_angle(total_distance, self.arm1, self.arm2)
 
         if (self.base_motor.angle < 60 and base_angle > 60):
-            self.base_motor.set_angle(60)
+            self.base_motor.set_angle_with_stall(60, self.elbow_motor)
         else:
-            self.base_motor.set_angle(base_angle)
+            self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
 
         self.theta_motor.set_angle(theta_angle)
-        self.elbow_motor.set_angle(elbow_angle)
-        self.base_motor.set_angle(base_angle)
+        self.elbow_motor.set_angle_with_stall(elbow_angle, self.base_motor)
+        self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
         
 
     def drop_piece(self):

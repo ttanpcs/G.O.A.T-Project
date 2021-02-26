@@ -52,6 +52,7 @@ class Arm:
         if (self.base_motor.angle < 60 and base_angle > 60):
             self.base_motor.set_angle_with_stall(60, self.elbow_motor)
         else:
+            print("this is happening" + str(base_angle))
             self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
 
         self.theta_motor.set_angle(theta_angle)

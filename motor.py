@@ -8,6 +8,7 @@ class Motor:
         self.maxduty = maxduty
         self.pinnum = pinnum
         self.hertz = hertz
+        self.angle = init_angle
 
     def set_angle_with_stall(self, angle, stall_motor):
         print(str(self.pinnum))

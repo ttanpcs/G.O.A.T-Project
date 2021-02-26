@@ -36,6 +36,7 @@ class Motor:
 
     def stall(self, stalltime):
         stall_duty = (self.angle/self.range) * (self.maxduty - self.minduty) + self.minduty
+        GPIO.setup(self.pinnum, GPIO.OUT)
         pwm=GPIO.PWM(self.pinnum, self.hertz)
         pwm.start(0)
         GPIO.output(self.pinnum, True)

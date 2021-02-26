@@ -40,7 +40,7 @@ class Arm:
             print(str(tan_angle) + "tan")
             if (tan_angle < 0):
                 tan_angle = tan_angle + 180
-            theta_angle = 180 - tan_angle
+            theta_angle = tan_angle
         
         base_distance = math.sqrt(math.pow(x, 2) + math.pow(y, 2)) - offset
         base_angle_p1 = math.degrees(math.atan(z/base_distance))

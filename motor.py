@@ -15,6 +15,7 @@ class Motor:
             self.angle = init_angle
 
     def set_angle_with_stall(self, angle, stall_motor):
+        print(str(self.pinnum))
         if self.flipped:
             angle = 180 - angle
         while (self.angle > angle):

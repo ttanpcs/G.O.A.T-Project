@@ -2,13 +2,12 @@ from time import sleep
 import RPi.GPIO as GPIO
 
 class Motor: 
-    def __init__(self, range, minduty, maxduty, pinnum, hertz, flipped, init_angle):
+    def __init__(self, range, minduty, maxduty, pinnum, hertz, init_angle):
         self.range = range
         self.minduty = minduty
         self.maxduty = maxduty
         self.pinnum = pinnum
         self.hertz = hertz
-        self.flipped = flipped
         if (flipped):
             self.angle = 180 - init_angle
         else:
@@ -16,8 +15,6 @@ class Motor:
 
     def set_angle_with_stall(self, angle, stall_motor):
         print(str(self.pinnum))
-        if self.flipped:
-            angle = 180 - angle
         while (self.angle > angle):
             if (self.angle - angle > 5):
                 self.rotate_to_angle_increment_with_stall(self.angle - 5, stall_motor)
@@ -30,8 +27,6 @@ class Motor:
                 self.rotate_to_angle_increment_with_stall(angle, stall_motor)
         
     def set_angle(self, angle):
-        if self.flipped:
-            angle = 180 - angle
         while (self.angle > angle):
             if (self.angle - angle > 5):
                 self.rotate_to_angle_increment(self.angle - 5)
@@ -69,10 +64,6 @@ class Motor:
         pwm.ChangeDutyCycle(0)
 
         pwm.stop()
-        if (self.flipped):
-            self.angle = 180 - angle
-        else:
-            self.angle = angle
 
     def rotate_to_angle_increment_with_stall(self, angle, stall_motor):
         
@@ -96,7 +87,3 @@ class Motor:
         pwm_stall.ChangeDutyCycle(0)
 
         pwm.stop()
-        if (self.flipped):
-            self.angle = 180 - angle
-        else:
-            self.angle = angle

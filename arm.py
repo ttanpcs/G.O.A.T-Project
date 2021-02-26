@@ -86,6 +86,8 @@ class Arm:
     def drop_piece(self):
         self.dropper_motor.rotate_to_angle_increment_with_stall(180, self.base_motor)
         self.base_motor.stall(3)
+
+    def close_dropper(self):
         self.dropper_motor.rotate_to_angle_increment_with_stall(0, self.base_motor)
 
     def move_to_board_coord(self, x, y):

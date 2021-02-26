@@ -59,6 +59,7 @@ class Arm:
         self.theta_motor.set_angle(theta_angle)
         self.elbow_motor.set_angle_with_stall(180 - elbow_angle, self.base_motor)
         self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
+        print(str(theta_angle) + str(base_motor) + str(elbow_motor))
         
 
     def drop_piece(self):

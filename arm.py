@@ -37,6 +37,7 @@ class Arm:
             theta_angle = 90
         else:
             tan_angle = math.degrees(math.atan(y/x))
+            print(tan_angle)
             if (tan_angle < 0):
                 tan_angle = tan_angle + 180
             theta_angle = 180 - tan_angle

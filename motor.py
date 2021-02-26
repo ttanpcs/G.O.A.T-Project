@@ -42,7 +42,7 @@ class Motor:
                 self.rotate_to_angle_increment(self.angle + 5)
             else:
                 self.rotate_to_angle_increment(angle)
-        
+        print()
 
     def stall(self, stalltime):
         sleep(stalltime)
@@ -72,6 +72,7 @@ class Motor:
         duty = (angle/self.range) * (self.maxduty - self.minduty) + self.minduty
         stall_duty = (stall_motor.angle/stall_motor.range) * (stall_motor.maxduty - stall_motor.minduty) + stall_motor.minduty
 
+        print(str(duty))
         GPIO.setup(self.pinnum, GPIO.OUT)
         GPIO.setup(stall_motor.pinnum, GPIO.OUT)
         pwm=GPIO.PWM(self.pinnum, self.hertz)

@@ -11,7 +11,7 @@ class Arm:
         # Motor(range of motion, minimum duty, maximum duty, power port, hertz, flipped?)
         self.theta_motor = motor.Motor(180, 2, 12, 15, 50, False, 90)
         self.base_motor = motor.Motor(180, 2, 12, 11, 50, False, 90)
-        self.elbow_motor = motor.Motor(180, 2, 12, 13, 50, False, 135)
+        self.elbow_motor = motor.Motor(180, 2, 12, 13, 50, False, 45)
         self.dropper_motor = motor.Motor(180, 2, 12, 16, 50, False, 0)
         self.cam_fov = cam_fov
         self.rel_x = rel_x
@@ -59,7 +59,6 @@ class Arm:
         self.theta_motor.set_angle(theta_angle)
         self.elbow_motor.set_angle_with_stall(180 - elbow_angle, self.base_motor)
         self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
-        print(str(theta_angle) + str(base_angle) + str(elbow_angle))
         
 
     def drop_piece(self):

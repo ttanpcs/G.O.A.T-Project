@@ -34,7 +34,6 @@ class Motor:
                 self.rotate_to_angle_increment(self.angle + 5)
             else:
                 self.rotate_to_angle_increment(angle)
-        print()
 
     def stall(self, stalltime):
         stall_duty = (self.angle/self.range) * (self.maxduty - self.minduty) + self.minduty
@@ -61,6 +60,7 @@ class Motor:
         pwm.ChangeDutyCycle(0)
 
         pwm.stop()
+        self.angle = angle
 
     def rotate_to_angle_increment_with_stall(self, angle, stall_motor):
         
@@ -84,3 +84,4 @@ class Motor:
         pwm_stall.ChangeDutyCycle(0)
 
         pwm.stop()
+        self.angle = angle

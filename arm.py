@@ -67,7 +67,22 @@ class Arm:
         print(str(total_distance))
         print(str(theta_angle))
         print(str(base_angle))
-        print(str(elbow_angle))
+        print(str(elbow_motor_angle))
+
+    def set_motor_angles(self, theta_angle, base_angle, elbow_angle):
+        elbow_motor_angle = 360 - (90 + base_angle) - elbow_angle
+
+        self.theta_motor.set_angle_with_stall(theta_angle, self.base_motor)
+        if (self.base_motor.angle < 60 and base_angle > 60):
+            self.base_motor.set_angle_with_stall(60, self.elbow_motor)
+        elif (self.base_motor.angle > 60 and base_angle < 60):
+            self.base_motor.set_angle_with_stall(60, self.elbow_motor)
+        else:
+            self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
+
+        
+        self.elbow_motor.set_angle_with_stall(elbow_motor_angle, self.base_motor)
+        self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
 
     def drop_piece(self):
         self.dropper_motor.rotate_to_angle_increment_with_stall(180, self.base_motor)

@@ -84,9 +84,9 @@ class Arm:
         self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
 
     def drop_piece(self):
-        self.base_motor.stall(4)
+        self.base_motor.stall(1)
         self.dropper_motor.rotate_to_angle_increment_with_stall(180, self.base_motor)
-        self.base_motor.stall(3)
+        self.base_motor.stall(2)
 
     def close_dropper(self):
         self.dropper_motor.rotate_to_angle_increment_with_stall(0, self.base_motor)

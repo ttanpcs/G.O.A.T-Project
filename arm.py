@@ -51,7 +51,7 @@ class Arm:
         elbow_angle = loc_angle(total_distance, self.arm1, self.arm2)
         elbow_motor_angle = 360 - (90 + base_angle) - elbow_angle
 
-        self.theta_motor.set_angle_with_stall(theta_angle + 6, self.base_motor)
+        self.theta_motor.set_angle_with_stall(theta_angle + 3, self.base_motor)
         if (self.base_motor.angle < 60 and base_angle > 60):
             self.base_motor.set_angle_with_stall(60, self.elbow_motor)
         elif (self.base_motor.angle > 60 and base_angle < 60):

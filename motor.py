@@ -86,3 +86,7 @@ class Motor:
 
         pwm.stop()
         self.angle = angle
+
+def stall_motors(motor_list, stalltime):
+    for motor in motor_list:
+        motor.stall(stalltime)

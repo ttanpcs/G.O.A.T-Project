@@ -261,12 +261,11 @@ class GameEngine (object):
 
         self.group_array_ = self.temp_group_array_
         
+        self.Swap_Current_Player()
+        self.Find_Current_Player_Tile()
         will_pass = False
         current_turn = np.array([-1, -1])
         will_pass, current_turn = self.current_player_.Take_Turn(new_board)
-
-        self.Swap_Current_Player()
-        self.Find_Current_Player_Tile()
 
         return will_pass, current_turn
 

@@ -37,7 +37,7 @@ class Arm:
             theta_angle = 90
         else:
             tan_angle = math.degrees(math.atan(y/x))
-            print(str(tan_angle) + "tan")
+            # print(str(tan_angle) + "tan")
             if (tan_angle < 0):
                 tan_angle = tan_angle + 180
             theta_angle = tan_angle
@@ -63,11 +63,11 @@ class Arm:
         self.elbow_motor.set_angle_with_stall(elbow_motor_angle, self.base_motor)
         self.base_motor.set_angle_with_stall(base_angle, self.elbow_motor)
         
-        print(str(base_distance))
-        print(str(total_distance))
-        print(str(theta_angle))
-        print(str(base_angle))
-        print(str(elbow_motor_angle))
+        # print(str(base_distance))
+        # print(str(total_distance))
+        # print(str(theta_angle))
+        # print(str(base_angle))
+        # print(str(elbow_motor_angle))
 
     def set_motor_angles(self, theta_angle, base_angle, elbow_angle):
 
@@ -86,7 +86,7 @@ class Arm:
     def drop_piece(self):
         self.base_motor.stall(1)
         self.dropper_motor.rotate_to_angle_increment_with_stall(180, self.base_motor)
-        self.base_motor.stall(2)
+        self.base_motor.stall(1)
 
     def close_dropper(self):
         self.dropper_motor.rotate_to_angle_increment_with_stall(0, self.base_motor)

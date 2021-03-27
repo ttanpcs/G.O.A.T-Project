@@ -1,4 +1,7 @@
 import GoCamera as gc
+import arm as a
+import motor as m
+import RPi.GPIO as GPIO
 import GoModel as gm
 import GoSound as gs
 import gameEngine as ge
@@ -18,8 +21,13 @@ def findPlayerMapping(player_type, tile_type):
         return player.RandomAIPlayer(True, tile_type)
 
 def initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player):
+    GPIO.setmode(GPIO.BOARD)
+    arm = a.Arm(11, 9, board_dimension, 48, -7.875, 6.5, 1, 3.125) # Should unHardcode rel_x, rel_y, rel_z
+    arm.set_motor_angles(90, 95, 40)
+    arm.close_dropper()
+    motorlist= [arm.base_motor,arm.elbow_motor]
+    m.stall_motors(motorlist,2)
     camera = gc.GoCamera()
-    background_not_ready = True
     white_player_type = findPlayerMapping(white_player, enums.TileType.WHITE_TILE) # Could be really cancer if pointers
     black_player_type = findPlayerMapping(black_player, enums.TileType.BLACK_TILE) # Could be really cancer if pointers
     background_photo = camera.capture()
@@ -27,10 +35,10 @@ def initialize(sound_type, board_size, board_offset, board_dimension, black_play
     sound = gs.GoSound(sound_type = sound_type)
     engine = ge.GameEngine(black_player_type, white_player_type, board_size)
 
-    return camera, model, sound, engine # arm, 
+    return camera, model, sound, engine, arm 
 
 def main(sound_type, board_size, board_offset, board_dimension, black_player, white_player):
-    camera, model, sound, engine = initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player) # arm, gameEngine
+    camera, model, sound, engine, arm = initialize(sound_type, board_size, board_offset, board_dimension, black_player, white_player) # arm, gameEngine
     game_ongoing = True 
     is_black_turn = False
     black_passed = False
@@ -43,19 +51,20 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
             game_ongoing = False
             # Figure out who won and do smth.... Could be a 50/50 and figure it out later
         else:      
-            time.sleep(3)
+            time.sleep(5)
             current_image = camera.capture()
-            if (engine.Get_Current_Player_Tile == enums.TileType.BLACK_TILE):
+            time.sleep(2)
+            if (engine.Get_Current_Player_Tile() == enums.TileType.BLACK_TILE):
                 is_black_turn = True
             else:
                 is_black_turn = False
             current_board = model.readBoard(current_image, is_black_turn)
             if (current_board is not None):
                 current_change_type = engine.Validate_Board(current_board)
-                # print(current_change_type) DELETE LATER
+                print(current_change_type) #DELETE LATER
                 if (current_change_type == enums.ChangeType.VALID_CHANGE):
                     coordinates = None
-                    if (is_black_turn):
+                    if (not is_black_turn):
                         black_passed, coordinates = engine.Process_Turn(current_board)
                         if (black_passed):
                             # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playPassSound)
@@ -72,13 +81,21 @@ def main(sound_type, board_size, board_offset, board_dimension, black_player, wh
                             # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playEndSound)
                             print("white end")
                     print(coordinates) # DELETE LATER (Error Check # 4)
+                    if (coordinates is not None):
+                        arm.move_to_board_coord(coordinates[0], coordinates[1])
+                        arm.drop_piece()
+                        arm.set_motor_angles(90, 95, 40)
+                        arm.close_dropper()
+                        motorlist= [arm.base_motor,arm.elbow_motor]
+                        m.stall_motors(motorlist,2)
                 # elif (current_change_type == enums.ChangeType.INVALID_CHANGE):
                     # playSound(is_black_turn, ge.Is_Black_Player_AI(), ge.IsWhite_Player_AI(), sound, gs.GoSound.playCheatSound)                    
-
+            else:
+                print("Board is none")
 if __name__ == '__main__':
     bs = 19
     bo = 0
-    bd = 0
+    bd = 15.75
     st = "default"
     white_player = "random_ai_player"
     black_player = "human_player"

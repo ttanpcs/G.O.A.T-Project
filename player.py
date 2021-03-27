@@ -28,12 +28,12 @@ class HumanPlayer (Player):
 class RandomAIPlayer (Player):
     def Take_Turn (self, board):
         random.seed()
-        x = random.randint(0, board.getSize())
-        y = random.randint(0, board.getSize())
+        x = random.randint(0, board.getSize() - 1)
+        y = random.randint(0, board.getSize() - 1)
 
         while (board.getPiece(x, y) != enums.TileType.NO_TILE):
-            x = random.randint(0, constants.GO_BOARD_LENGTH)
-            y = random.randint(0, constants.GO_BOARD_LENGTH)
+            x = random.randint(0, constants.GO_BOARD_LENGTH - 1)
+            y = random.randint(0, constants.GO_BOARD_LENGTH - 1)
         
         will_pass = random.randint(0, 30) # Note That these numbers are chosen randomly
         if (will_pass == 1):

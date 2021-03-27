@@ -238,7 +238,8 @@ class GoModel:
         a, difference = cv2.threshold(cv2.absdiff(last_gray, current_gray), 25, 255, cv2.THRESH_BINARY)
         difference = cv2.bitwise_not(difference)
         params = cv2.SimpleBlobDetector_Params()
-        params.filterByArea = False
+        params.filterByArea = True
+        params.minArea = 300
         params.filterByInertia = False
         params.filterByConvexity = False
         detector = cv2.SimpleBlobDetector_create(params)
@@ -253,11 +254,12 @@ class GoModel:
         if (self.background_image is not None):
             output = np.full((self.size, self.size), enums.TileType.NO_TILE, dtype = enums.TileType)
             keypoints = self.findKeypoints(image)            
+            print(len(keypoints))
             num_valid_keypoints = self.mergeBoard(keypoints, self.background_corners, is_black_turn, cascade_output, output) 
             if ((self.last_board).getNumPieces() + 1 < num_valid_keypoints):
-                # print("Number Issue")
-                # print((self.last_board).getNumPieces() + 1)
-                # print(num_valid_keypoints)
+                print("Number Issue")
+                print((self.last_board).getNumPieces() + 1)
+                print(num_valid_keypoints)
                 return None
 
             self.last_board = gb.Board(board = output, num_pieces = num_valid_keypoints)
